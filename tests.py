@@ -1,5 +1,4 @@
 import pytest
-
 from solution import EventRegistration, UserStatus, DuplicateRequest, NotFound
 
 
@@ -79,8 +78,31 @@ def test_capacity_zero_all_waitlisted_and_promotion_never_happens():
     with pytest.raises(NotFound):
         er.cancel("missing")
 
-
-
 #################################################################################
-# Add your own additional tests here to cover more cases and edge cases as needed.
+# Additional Edge Case Tests
 #################################################################################
+
+def test_multiple_cancellations_in_sequence():
+    er = EventRegistration(capacity=2)
+    for i in range(1, 6):
+        er.register(f"u{i}")
+    
+    # Snapshot: [u1, u2] registered, [u3, u4, u5] waitlist
+    er.cancel("u1") # Promotes u3
+    er.cancel("u2") # Promotes u4
+    
+    assert er.snapshot()["registered"] == ["u3", "u4"]
+    assert er.snapshot()["waitlist"] == ["u5"]
+    assert er.status("u5") == UserStatus("waitlisted", 1)
+
+def test_re_register_after_canceling():
+    er = EventRegistration(capacity=1)
+    er.register("u1")
+    er.cancel("u1")
+    
+    assert er.status("u1") == UserStatus("none")
+    
+    # Should be able to register again without DuplicateRequest
+    s1 = er.register("u1")
+    assert s1 == UserStatus("registered")
+    assert er.snapshot()["registered"] == ["u1"]
