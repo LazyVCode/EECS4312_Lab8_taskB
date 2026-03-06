@@ -1,5 +1,5 @@
-## Student Name:
-## Student ID:
+## Student Name: VIkram Singh Chauhan
+## Student ID: 220914867
 
 """
 Task B: Event Registration with Waitlist (Stub)
@@ -38,6 +38,10 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 
+from dataclasses import dataclass
+from typing import List, Optional
+
+
 class DuplicateRequest(Exception):
     """Raised if a user tries to register but is already registered or waitlisted."""
     pass
@@ -63,8 +67,7 @@ class UserStatus:
 
 class EventRegistration:
     """
-    Students must implement this class per the lab handout.
-    Deterministic ordering is required (e.g., FIFO waitlist, predictable registration order).
+    Event Registration module managing capacity, FIFO waitlists, and state transitions.
     """
 
     def __init__(self, capacity: int) -> None:
@@ -72,8 +75,9 @@ class EventRegistration:
         Args:
             capacity: maximum number of registered users (>= 0)
         """
-        # TODO: Initialize internal data structures
-        raise NotImplementedError("EventRegistration.__init__ not implemented yet")
+        self.capacity = capacity
+        self.registered_users: List[str] = []
+        self.waitlisted_users: List[str] = []
 
     def register(self, user_id: str) -> UserStatus:
         """
@@ -84,21 +88,33 @@ class EventRegistration:
         Raises:
             DuplicateRequest if user already exists (registered or waitlisted)
         """
-        # TODO: Implement per lab handout
-        raise NotImplementedError("register not implemented yet")
+        if user_id in self.registered_users or user_id in self.waitlisted_users:
+            raise DuplicateRequest(f"User {user_id} is already registered or waitlisted.")
+
+        if len(self.registered_users) < self.capacity:
+            self.registered_users.append(user_id)
+            return UserStatus("registered")
+        else:
+            self.waitlisted_users.append(user_id)
+            return UserStatus("waitlisted", len(self.waitlisted_users))
 
     def cancel(self, user_id: str) -> None:
         """
         Cancel a user:
           - if registered -> remove and promote earliest waitlisted user (if any)
           - if waitlisted -> remove from waitlist
-          - behavior when user not found depends on handout (raise NotFound or ignore)
-
-        Raises:
-            NotFound (if required by handout)
+          - if not found -> raise NotFound
         """
-        # TODO: Implement per lab handout
-        raise NotImplementedError("cancel not implemented yet")
+        if user_id in self.registered_users:
+            self.registered_users.remove(user_id)
+            # Promote the earliest waitlisted user if there's room and someone is waiting
+            if self.waitlisted_users and len(self.registered_users) < self.capacity:
+                promoted_user = self.waitlisted_users.pop(0)
+                self.registered_users.append(promoted_user)
+        elif user_id in self.waitlisted_users:
+            self.waitlisted_users.remove(user_id)
+        else:
+            raise NotFound(f"User {user_id} not found in the system.")
 
     def status(self, user_id: str) -> UserStatus:
         """
@@ -107,13 +123,19 @@ class EventRegistration:
           - waitlisted with position (1-based)
           - none
         """
-        # TODO: Implement per lab handout
-        raise NotImplementedError("status not implemented yet")
+        if user_id in self.registered_users:
+            return UserStatus("registered")
+        if user_id in self.waitlisted_users:
+            position = self.waitlisted_users.index(user_id) + 1
+            return UserStatus("waitlisted", position)
+        
+        return UserStatus("none")
 
     def snapshot(self) -> dict:
         """
-        (Optional helper for debugging/tests)
         Return a deterministic snapshot of internal state.
         """
-        # TODO: Implement if required/allowed
-        raise NotImplementedError("snapshot not implemented yet")
+        return {
+            "registered": list(self.registered_users),
+            "waitlist": list(self.waitlisted_users)
+        }
