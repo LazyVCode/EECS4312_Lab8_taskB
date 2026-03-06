@@ -1,6 +1,188 @@
-## Student Name:
-## Student ID: 
+## Student Name: Vikram Singh Chauhan
+## Student ID: 220914867
 
-Prompt #1: {}
-Response #1: {}
+Prompt #1: {help me understand the requirements for the submission of the lab}
+Response #1: {I reviewed your lab manual. Here is a clear breakdown of what you actually need to submit and do, step-by-step, so you understand the requirements.
+
+EECS 4312 Lab 8 – What You Must Do
+
+This lab is about writing good requirements and then using an LLM (AI) to implement the system. The focus is not coding skill, but how clearly you define the system requirements. 
+
+LAB8_MANUAL_02_Z
+
+You will build a Python Event Registration System with a Waitlist.
+
+1️⃣ System You Must Build
+
+Your Python module manages registration for a single event with limited capacity.
+
+The system must support:
+
+Core Features
+
+Accept an event capacity
+
+Register users until capacity is full
+
+Extra users go to a waitlist (FIFO order)
+
+If someone cancels, the first waitlisted user is promoted
+
+Prevent duplicate registrations
+
+Allow users to check their status
+
+Example state:
+
+Capacity: 2
+
+Registered: [Alice, Bob]
+Waitlist: [Charlie, David]
+
+If Bob cancels:
+
+Registered: [Alice, Charlie]
+Waitlist: [David]
+2️⃣ System Rules (Important)
+
+Your program must guarantee:
+
+Invariants
+
+A user cannot appear twice in the system
+
+A user cannot be both registered and waitlisted
+
+Registered users never exceed capacity
+
+Waitlist rule
+
+Waitlist must be FIFO (First In First Out)
+
+Deterministic behavior
+
+Same sequence of actions → same results
+
+3️⃣ Edge Cases You Must Handle
+
+Your system must correctly handle situations like:
+
+Multiple users canceling
+
+Waitlisted users canceling
+
+Users registering again after cancel
+
+Capacity = 0
+
+Rapid operations
+
+Users querying status during operations
+
+These must appear in your tests. 
+
+LAB8_MANUAL_02_Z
+
+4️⃣ TASK 1 — Requirements Form (First Step)
+
+Before coding anything you must complete:
+
+eClass Form
+
+Lab8 Persona – Form1 Constraint Specification
+
+This form contains:
+
+Functional requirements
+
+Constraints
+
+Acceptance criteria
+
+Edge cases
+
+Important rule:
+
+🚫 You cannot use the LLM before completing this form.
+
+The requirements must be:
+
+precise
+
+testable
+
+no vague words
+
+Example of bad requirement:
+
+❌ “The system should handle users efficiently.”
+
+Good requirement:
+
+✅ “The system must reject registration if the user already exists in the registered list or waitlist.”
+
+5️⃣ TASK 2 — GitHub Repository Setup
+
+You must create your repository.
+
+Steps:
+
+1️⃣ Go to the class repo
+https://github.com/EECS4312TeachingTeam/EECS4312_Lab8_taskB
+
+2️⃣ Fork the repository
+
+3️⃣ Add
+EECS4312TeachingTeam
+as a collaborator
+
+4️⃣ Work on your own branch
+
+🚫 Do NOT commit directly to main
+
+5️⃣ Commit regularly to show progress
+
+6️⃣ TASK 3 — LLM Interaction (Important)
+
+Now you can use AI.
+
+Your first prompt must include:
+
+problem summary
+
+functional requirements
+
+constraints
+
+acceptance criteria
+
+Then ask:
+
+“Are there any ambiguities or missing clarifications?”
+
+You must log every interaction.
+
+🧠 What the Instructor is Actually Evaluating
+
+They are testing:
+
+how well you define requirements
+
+how you interact with AI
+
+how you identify missing specifications
+
+whether tests match requirements
+
+NOT complex algorithms.
+
+✅ If you want, I can also show you:
+
+A complete example solution.py structure
+
+5 tests you can use
+
+How to write Form1 answers
+
+How to structure the prompt log.}
 --------------------------------------------------
