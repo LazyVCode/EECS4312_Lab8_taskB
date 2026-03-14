@@ -2,187 +2,405 @@
 ## Student ID: 220914867
 
 Prompt #1: {help me understand the requirements for the submission of the lab}
-Response #1: {I reviewed your lab manual. Here is a clear breakdown of what you actually need to submit and do, step-by-step, so you understand the requirements.
+Response #1: {I’ll explain the **lab submission requirements in simple terms** so you understand exactly **what you must do and what to submit**. Your lab is mainly about **using personas to improve the requirements and implementation of the system you built in Lab 8**. 
 
-EECS 4312 Lab 8 – What You Must Do
+---
 
-This lab is about writing good requirements and then using an LLM (AI) to implement the system. The focus is not coding skill, but how clearly you define the system requirements. 
+# 1. Main Goal of the Lab
 
-LAB8_MANUAL_02_Z
+The purpose of this lab is to **see how user personas influence system requirements and AI-generated code**.
 
-You will build a Python Event Registration System with a Waitlist.
+Instead of directly coding like in Lab 8, you must:
 
-1️⃣ System You Must Build
+1. Analyze **two user personas**.
+2. Convert their **needs into system constraints**.
+3. Update the **requirements of your system**.
+4. Implement the system again with those constraints.
+5. **Test and verify** that your system satisfies them. 
 
-Your Python module manages registration for a single event with limited capacity.
+---
 
-The system must support:
+# 2. High-Level Workflow (What You Actually Do)
 
-Core Features
+The lab has **9 main tasks**. Here is the simplified process:
 
-Accept an event capacity
+### Step 1 — Review Lab 8
 
-Register users until capacity is full
+* Open your **Lab 8 repository**
+* Understand how your current system works
+* Create a new branch:
 
-Extra users go to a waitlist (FIFO order)
+```
+Lab9_studentID
+```
 
-If someone cancels, the first waitlisted user is promoted
+All Lab 9 work must be done in this branch.
 
-Prevent duplicate registrations
+---
 
-Allow users to check their status
+# Step 2 — Read the Personas
 
-Example state:
+You are given **two users**:
 
-Capacity: 2
+### Persona 1: Jane (Primary User)
 
-Registered: [Alice, Bob]
-Waitlist: [Charlie, David]
+* Busy professional
+* Wants automation
+* Prefers **minimal notifications**
+* Expects system to **resolve conflicts automatically**
 
-If Bob cancels:
+### Persona 2: Mo (Edge User)
 
-Registered: [Alice, Charlie]
-Waitlist: [David]
-2️⃣ System Rules (Important)
+* Needs **clear explanations**
+* Sensitive to uncertainty
+* Wants **deterministic and transparent behavior**
 
-Your program must guarantee:
+Your job is to **understand their needs and frustrations**.
 
-Invariants
+---
 
-A user cannot appear twice in the system
+# Step 3 — Create Persona → Constraint Table
 
-A user cannot be both registered and waitlisted
+You must convert persona needs into **system constraints**.
 
-Registered users never exceed capacity
+Example:
 
-Waitlist rule
+| Persona | Persona Need                 | Constraint                              | Acceptance Criteria               | Test Idea                  |
+| ------- | ---------------------------- | --------------------------------------- | --------------------------------- | -------------------------- |
+| Jane    | Avoid too many notifications | System must prevent duplicate reminders | Only one reminder shown per event | Create duplicate reminders |
 
-Waitlist must be FIFO (First In First Out)
+You must create **at least 8 constraints total** from both personas. 
 
-Deterministic behavior
+You submit this through:
 
-Same sequence of actions → same results
+**Form 1 on eClass**
 
-3️⃣ Edge Cases You Must Handle
+Also create a file:
 
-Your system must correctly handle situations like:
+```
+constraint_prompt_log.txt
+```
 
-Multiple users canceling
+If you used AI while thinking about constraints, record the prompts.
 
-Waitlisted users canceling
+---
 
-Users registering again after cancel
+# Step 4 — Evaluate Your Lab 8 System
 
-Capacity = 0
+Now check if your **existing system satisfies the constraints**.
 
-Rapid operations
+For each constraint mark:
 
-Users querying status during operations
+* **Fully Supported**
+* **Partially Supported**
+* **Not Supported**
 
-These must appear in your tests. 
+Also explain **what changes are needed** if the system does not satisfy it.
 
-LAB8_MANUAL_02_Z
+---
 
-4️⃣ TASK 1 — Requirements Form (First Step)
+# Step 5 — Update System Requirements
 
-Before coding anything you must complete:
+Create or update this file:
 
-eClass Form
+```
+requirements.txt
+```
 
-Lab8 Persona – Form1 Constraint Specification
+It must include **7 sections**:
 
-This form contains:
+### 1. Problem Understanding
 
-Functional requirements
+Explain:
 
-Constraints
+* system purpose
+* inputs
+* outputs
+* system goal
 
-Acceptance criteria
+---
 
-Edge cases
+### 2. Assumptions
 
-Important rule:
+At least **6 assumptions**
 
-🚫 You cannot use the LLM before completing this form.
+Example:
 
-The requirements must be:
+```
+A1: Users interact through a command interface.
+A2: Reminders have timestamps.
+```
 
-precise
+---
 
-testable
+### 3. Functional Requirements
 
-no vague words
+At least **4 system behaviors**
 
-Example of bad requirement:
+Example:
 
-❌ “The system should handle users efficiently.”
+```
+FR1: The system shall schedule reminders.
+FR2: The system shall resolve reminder conflicts automatically.
+```
 
-Good requirement:
+---
 
-✅ “The system must reject registration if the user already exists in the registered list or waitlist.”
+### 4. System Constraints
 
-5️⃣ TASK 2 — GitHub Repository Setup
+At least **6 constraints derived from personas**
 
-You must create your repository.
+Example:
 
-Steps:
+```
+C1: The system must produce deterministic reminder ordering.
+Derived from persona: Jane – predictable behavior
+```
 
-1️⃣ Go to the class repo
-https://github.com/EECS4312TeachingTeam/EECS4312_Lab8_taskB
+---
 
-2️⃣ Fork the repository
+### 5. Acceptance Criteria
 
-3️⃣ Add
-EECS4312TeachingTeam
-as a collaborator
+At least **6 criteria that verify the system**
 
-4️⃣ Work on your own branch
+Example:
 
-🚫 Do NOT commit directly to main
+```
+AC1: When two reminders have the same time, they are ordered by creation time.
+```
 
-5️⃣ Commit regularly to show progress
+---
 
-6️⃣ TASK 3 — LLM Interaction (Important)
+### 6. Edge Cases
 
-Now you can use AI.
+At least **3 edge cases**
 
-Your first prompt must include:
+Example:
 
-problem summary
+```
+EC1: Multiple reminders at the same timestamp
+Expected behavior: deterministic ordering
+```
 
-functional requirements
+---
 
-constraints
+### 7. Traceability
 
-acceptance criteria
+Link requirements together:
 
-Then ask:
+```
+FR1 → C1 → AC1
+FR2 → C3 → AC4
+```
 
-“Are there any ambiguities or missing clarifications?”
+---
 
-You must log every interaction.
+Also add an empty section:
 
-🧠 What the Instructor is Actually Evaluating
+```
+Revision Notes
+```
 
-They are testing:
+This records changes discovered later.
 
-how well you define requirements
+---
 
-how you interact with AI
+# Step 6 — Persona-Aware Prompting
 
-how you identify missing specifications
+Before coding, you must **show your requirements to an LLM (like ChatGPT)**.
 
-whether tests match requirements
+Ask it to check:
 
-NOT complex algorithms.
+* missing constraints
+* unclear requirements
+* missing edge cases
 
-✅ If you want, I can also show you:
+Then update your requirements if needed.
 
-A complete example solution.py structure
+Every prompt must be saved in:
 
-5 tests you can use
+```
+prompt_log.txt
+```
 
-How to write Form1 answers
+Example format:
 
-How to structure the prompt log.}
---------------------------------------------------
+```
+Prompt 1: [Prompt text]
+
+Response summary: ...
+
+Decision: Accept / Modify / Reject
+```
+
+---
+
+# Step 7 — Implement the System
+
+Now implement the updated system in:
+
+```
+solution.py
+```
+
+Your code must follow:
+
+* requirements
+* constraints
+* acceptance criteria
+* edge cases
+
+---
+
+# Step 8 — Create Tests
+
+Create this file:
+
+```
+tests.py
+```
+
+Requirements:
+
+* **At least 5 tests**
+* **At least 2 edge case tests**
+
+Example:
+
+```python
+# Covers C3, AC2
+def test_waitlist_promotion_is_fifo():
+```
+
+Tests verify that your system satisfies constraints. 
+
+If a test reveals missing requirements, update **requirements.txt** and add a **revision note**.
+
+---
+
+# Step 9 — Reflection
+
+Complete:
+
+**Form 2 on eClass**
+
+This is a reflection about how personas affected your design.
+
+---
+
+# 3. Files You MUST Submit
+
+Inside your **Lab9_studentID branch**, you must include:
+
+### Required files
+
+```
+solution.py
+tests.py
+requirements.txt
+prompt_log.txt
+constraint_prompt_log.txt
+```
+
+---
+
+### Required forms on eClass
+
+1. **Form 1 – Persona Constraint Specification**
+2. **Form 2 – Reflection**
+
+---
+
+# 4. Final Checklist Before Submission
+
+Make sure:
+
+✔ All files are in **Lab9_studentID branch**
+✔ Tests **run successfully**
+✔ Prompt logs include **all prompts**
+✔ Both **eClass forms are completed**
+
+If anything is missing, **the lab will not be graded**. 
+
+---
+
+✅ **In simple words:**
+You are taking your **Lab 8 system**, adding **persona-based requirements**, implementing it again, and proving through **tests and documentation** that it satisfies those user needs.
+
+---
+
+If you want, I can also help you with:
+
+* ✅ **Creating the 8 persona constraints (Task 3)**
+* ✅ **Writing the requirements.txt properly**
+* ✅ **Writing tests.py**
+* ✅ **Structuring the prompt_log.txt for full marks**.}
+
+Prompt #1: {what are the required submissions for the constraint promt. txt file}
+Response #1:{For the **`constraint_prompt_log.txt` file**, you only need to document **any prompts you used while interpreting the personas and deriving system constraints in Task 3**. If you didn’t use an LLM, you still must submit the file with a short note. 
+
+---
+
+## What the file must contain
+
+Each entry in **`constraint_prompt_log.txt`** should include **three parts**:
+
+1️⃣ **Prompt** – The exact question you asked the LLM
+2️⃣ **Purpose** – Why you asked that prompt
+3️⃣ **Response Summary** – A short summary (1–2 sentences) of the LLM response
+
+The lab manual gives this required format: 
+
+```
+Prompt 1: [Prompt text]
+
+Purpose: Why the prompt was asked 
+(e.g., clarify persona need, check if a constraint is testable, brainstorm constraints)
+
+Response summary:
+Brief description of the LLM response (1–2 sentences)
+```
+
+---
+
+## Example of a Correct `constraint_prompt_log.txt`
+
+Example:
+
+```
+Prompt 1: Based on the persona Jane, what system constraints could reduce notification overload?
+
+Purpose: To brainstorm possible constraints derived from Jane’s need for minimal notifications.
+
+Response summary: The LLM suggested limiting duplicate reminders, grouping notifications, and enforcing a maximum notification frequency.
+```
+
+```
+Prompt 2: How can a system ensure deterministic behavior when multiple reminders occur at the same timestamp?
+
+Purpose: To clarify how to convert Mo’s need for predictable system behavior into a testable constraint.
+
+Response summary: The LLM suggested implementing deterministic ordering using creation time or priority rules.
+```
+
+---
+
+## If You DID NOT Use an LLM
+
+You **still must include the file** with a note like this:
+
+```
+No LLM assistance was used while deriving persona constraints for Task 3.
+All constraints were generated independently by the student.
+```
+
+---
+
+✅ **Important:**
+This file only logs prompts used for **understanding personas and creating constraints (Task 3)**.
+Prompts used later for **implementation or debugging go in `prompt_log.txt`, not here.**
+
+---
+
+If you want, I can also show you **5–6 good prompts students typically use for Task 3** so your `constraint_prompt_log.txt` looks strong for grading.}
+
