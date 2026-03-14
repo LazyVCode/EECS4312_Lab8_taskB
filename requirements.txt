@@ -1,0 +1,107 @@
+## Student Name: Vikram Singh Chauhan
+## Student ID: 220914867
+
+1. Problem Understanding
+
+System purpose: Manage registration and waitlisting for a single event with a fixed capacity while adhering to persona-specific behavioral constraints (predictability, explicit feedback, and concise operations).
+Inputs to the system: 
+- Event capacity (integer >= 0)
+- User ID to register (string)
+- User ID to cancel (string)
+- User ID to check status (string)
+Outputs produced by the system: 
+- Current user status (registered, waitlisted with 1-based position, or none)
+- Explicit notification strings for automated promotions
+- Descriptive exception messages (DuplicateRequest, NotFound)
+- Deterministic snapshot dictionaries of the entire system state
+Primary goal of the system: Register users up to the defined capacity, place overflow users into a strict FIFO waitlist, and automatically and deterministically promote waitlisted users upon cancellations without any silent failures.
+
+2. Assumptions
+
+A1: Users will interact with the system sequentially, or the system uses an alphanumeric tie-breaker to resolve truly simultaneous requests deterministically.
+A2: The event capacity provided upon initialization is a non-negative integer (including zero).
+A3: User IDs provided to the system are unique string identifiers.
+A4: The waitlist has no maximum capacity limit and can hold an indefinite number of users.
+A5: The system operates within the context of a single event (no multi-event routing is required).
+A6: Users will want to query their status independently from the registration and cancellation actions.
+
+3. Functional Requirements
+
+FR1: The system shall accept a fixed maximum capacity upon initialization.
+FR2: The system shall successfully register new users for the event as long as the current number of registered users is strictly less than the capacity.
+FR3: The system shall automatically route any user who attempts to register after the capacity is full into a FIFO waitlist.
+FR4: The system shall automatically promote the earliest waitlisted user to registered status immediately when an existing registered user cancels.
+FR5: The system shall explicitly reject duplicate registration attempts with a clear error message rather than failing silently.
+FR6: The system shall explicitly raise a `NotFound` error with a clear message when a cancellation is requested for a non-existent user.
+FR7: The system shall allow users to query their precise current status (state and 1-based position).
+FR8: The system shall output an explicit explanation notification string whenever a waitlist promotion occurs.
+
+4. System Constraints
+
+C1: The system must maintain a strict, deterministic First-In-First-Out (FIFO) queue for the waitlist.
+Derived from persona attribute: Jane (Need: Predictable and stable ordering of system decisions)
+
+C2: The system must automatically promote the earliest waitlisted user upon a cancellation without manual intervention.
+Derived from persona attribute: Jane (Need: Automatic handling of conflicts)
+
+C3: The system must generate an explicit output message detailing who was promoted from the waitlist and why.
+Derived from persona attribute: Mo (Need: Clear explanations when waitlist promotions occur)
+
+C4: The system must explicitly raise an error (e.g., NotFound) when cancelling a non-existent user, avoiding silent failures.
+Derived from persona attribute: Mo (Pain Point: Silent failures or dropped requests)
+
+C5: The system must return concise, standardized status outputs (e.g., state and position only) for successful standard operations without promotions.
+Derived from persona attribute: Jane (Pain Point: Receiving too many notifications or information overload)
+
+C6: The system must implement a strict tie-breaking mechanism (e.g., alphanumeric sorting by User ID) to consistently resolve simultaneous registration requests.
+Derived from persona attribute: Mo (Need: Deterministic system behavior under ties or conflicting conditions)
+
+5. Acceptance Criteria
+
+AC1: Given the event is full and users are waitlisted, when a registered user cancels, then the earliest waitlisted user must be automatically promoted.
+AC2: Given the system automatically promotes a waitlisted user due to a cancellation, when the state updates, then the system must output an explicit notification stating the promoted user and the reason.
+AC3: Given a non-existent User ID, when a cancellation request is submitted, then the system must immediately raise a `NotFound` exception with a clear error message instead of ignoring the action.
+AC4: Given a user successfully registers or is waitlisted without triggering a promotion, when the operation completes, then the system must return only their precise new state and position without additional descriptive text.
+AC5: Given two users attempt to register at the exact same timestamp for 1 remaining slot, when the system processes the requests, then it must apply a deterministic tie-breaking rule (alphanumeric by ID) to register one and waitlist the other.
+AC6: Given a user is currently on the waitlist, when the user queries the system for their status, then the system must output precisely "waitlisted" along with their exact 1-based numerical position in the queue.
+
+6. Edge Cases
+
+EC1: Capacity initialized to zero.
+Expected system behavior: All registration requests are immediately routed to the waitlist starting at position 1. No user can achieve "registered" status.
+
+EC2: Cancellation of a non-existent user.
+Expected system behavior: The system explicitly raises a `NotFound` exception with a detailed error message explaining that the user does not exist in the system.
+
+EC3: Multiple cancellations in rapid sequence.
+Expected system behavior: The system correctly promotes multiple waitlisted users in exact FIFO order, and outputs a separate explicit explanation notification for each promotion event.
+
+EC4: Duplicate registration attempt.
+Expected system behavior: The system explicitly raises a `DuplicateRequest` exception with a detailed message explaining that the user is already registered or waitlisted.
+
+7. Traceability
+
+FR4 -> C2 -> AC1
+FR8 -> C3 -> AC2
+FR6 -> C4 -> AC3
+FR2 -> C5 -> AC4
+FR2 -> C6 -> AC5
+FR7 -> C1 -> AC6
+FR7 -> C5 -> AC6
+
+8. Revision Notes
+
+Revision Note 1
+Requirement updated: FR6, C4 (Cancellation of unknown users)
+Reason: Reviewing the personas revealed an ambiguity in Lab 8 regarding how unknown user cancellations were handled. The Lab 8 baseline handled it with a `NotFound` exception, but we formalized this as a strict constraint to prevent silent failures for Mo.
+Action: Added explicit constraint C4 and Acceptance Criteria AC3 to mandate raising `NotFound` with a descriptive message.
+
+Revision Note 2
+Requirement updated: FR8, C3 (Waitlist promotion notifications)
+Reason: During requirement generation, it was identified that Mo experiences stress when systems behave automatically without explanation. The baseline Lab 8 system silently promoted users.
+Action: Updated the `cancel` function requirement to return an explicit notification string whenever a background promotion occurs, addressing Mo's need for transparency.
+
+Revision Note 3
+Requirement updated: FR5, C4 (Duplicate registration rejections)
+Reason: A test revealed that while the Lab 8 system prevented duplicate registrations, it needed to be more explicit about *why* the registration was rejected to satisfy Mo's persona.
+Action: Modified the `DuplicateRequest` exception to include a detailed, explicit string explaining that the user is already in the system.
